@@ -16,11 +16,13 @@ window.resizable(False, False)
 
 score = 0
 
-label = Label(window, text="Something here:{}".format(score), font=('Comic Sans', 40))
+label = Label(window, text="Something here:{}".format(score), font=('consolas', 40))
 label.pack()
 
 canvas = Canvas(window, bg=BACKGROUND_COLOR, height=GAME_HEIGHT, width=GAME_WIDTH)
 canvas.pack()
 
 window.update()
+
+
 window.mainloop()
