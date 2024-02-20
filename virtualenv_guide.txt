@@ -1,0 +1,4 @@
+https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/
+
+Why we need a virtual environment for a Python-based project: 
+https://stackoverflow.com/questions/41972261/what-is-a-virtualenv-and-why-should-i-use-one

@@ -1,0 +1,33 @@
+# Keywords:
+- Reinforcement Learning, Deep Learning
+- Neural Network
+- Deep Q Learning
+- Self-learning
+
+# Reinforcement Learning
+- is an area of machine learning concerned with how software agents ought to take actions in an environment in order to 
+maximize the notion of cumulative reward
+- in simple terms: RL teaches a software agent how to behave in an environment by telling it how good it's doing
+
+# Deep Q Learning
+Extends Reinforcement Learning by using a deep Neural Network to predict the actions
+
+# Agent 
+- game 
+- model
+
+# Training
+- state = get_state(game)
+- action = get_move(state):
+    - model.predict()
+- reward, game_over, score = game.play_step(action)
+- new_state = get_state(game)
+- remember
+- model.train()
+
+## Game(Pygame)
+- play_step(action) -> reward, game_over, score
+## Model(PyTorch)
+Linear_QNet(DQN)
+- model.predict(state) -> action
+
