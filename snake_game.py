@@ -2,6 +2,7 @@ import pygame
 import random
 from enum import Enum
 from collections import namedtuple
+import numpy as np
 # pygame setup
 pygame.init()
 font = pygame.font.Font('arial.ttf', 25)
@@ -33,7 +34,7 @@ BLUE1 = (0, 128, 0)
 BLACK = (0, 0, 0)
 
 BLOCK_SIZE = 20 # set pixel size to 20
-SPEED = 18
+SPEED = 15
 
 class SnakeGame:
     # set display resolution
@@ -45,6 +46,10 @@ class SnakeGame:
         pygame.display.set_caption('Snake Game!')
         self.clock = pygame.time.Clock()
         
+        self.newgame()
+
+    # function to reset the game into a new one for the AI agent to hit reset if died
+    def newgame(self):
         # init game state, starting with going to the right
         self.direction = Direction.RIGHT
         
@@ -57,7 +62,8 @@ class SnakeGame:
         self.score = 0
         self.food = None
         self._place_food()
-        
+        self.frame_iteration = 0 # reset new game so frame iteration back to 0
+
     def _place_food(self):
         # get a random int with pixel length being scaled
         # after we acquire a random pixel coordinate, we multiply by BLOCK_SIZE
@@ -69,40 +75,33 @@ class SnakeGame:
             self._place_food()
     
     # the main function to implement moves and update directions on display   
-    def play_step(self):
+    def play_step(self, action):
+        self.frame_iteration += 1
         # 1. collect user input
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit() # command used to exit in Python
-            if event.type == pygame.KEYDOWN: # pygame.KEYDOWN is to check if there is any key pressed on the keyboard
-                # We add a second argument to check if the current direction of the class SnakeGame is on the opposite
-                # if it is opposite, we will not update the direction to avoid collisions
-                # NOTE: MAYBE just leave it as be should be fine, as another element for the agent to take into consideration when moving
-                if (event.key == pygame.K_LEFT) & (self.direction != Direction.RIGHT):
-                    self.direction = Direction.LEFT
-                elif (event.key == pygame.K_RIGHT) & (self.direction != Direction.LEFT):
-                    self.direction = Direction.RIGHT
-                elif (event.key == pygame.K_UP) & (self.direction != Direction.DOWN):
-                    self.direction = Direction.UP
-                elif (event.key == pygame.K_DOWN) & (self.direction != Direction.UP):
-                    self.direction = Direction.DOWN
         
         # 2. move
-        self._move(self.direction) # update the head
+        self._move(action) # update the head
         self.snake.insert(0, self.head) # for every screen frame, just iteratively insert the new head
         # then we have a code snippet to pop the head in section 4 of this function
         
         # 3. check if game over
+        reward = 0
         game_over = False
-        if self._is_collision():
+        if self._is_collision() or self.frame_iteration  > 100*len(self.snake): # second clause to make sure if the snake is going on
+                                                                                # without getting a reward or dying -> we reset the game
             game_over = True
-            return game_over, self.score
+            reward = -10
+            return reward, game_over, self.score
             
         # 4. place new food or just move
         if self.head == self.food:
             self.score += 1 # if food is eaten, then we skip the pop() method and a new section of the body is going to be
                             # inserted in the next frame refresh -> this is how the body will get longer
+            reward = 10
             self._place_food()
         else:
             self.snake.pop()
@@ -111,14 +110,16 @@ class SnakeGame:
         self._update_ui()
         self.clock.tick(SPEED)
         # 6. return game over and score
-        return game_over, self.score
+        return reward, game_over, self.score
     
-    def _is_collision(self):
+    def _is_collision(self, point=None):
+        if point is None:
+            point = self.head
         # check if snake hits the boundaries
-        if self.head.x > self.w - BLOCK_SIZE or self.head.x < 0 or self.head.y > self.h - BLOCK_SIZE or self.head.y < 0:
+        if point > self.w - BLOCK_SIZE or point < 0 or point > self.h - BLOCK_SIZE or point < 0:
             return True
         # check if snake hits itself
-        if self.head in self.snake[1:]:
+        if point in self.snake[1:]:
             return True
         
         return False
@@ -137,30 +138,35 @@ class SnakeGame:
         pygame.display.flip() # flip() the display to put work on screen
         # for this one, we may not need to add a replay button to simplify the learning process of the agent
         
-    def _move(self, direction):
+    def _move(self, action):
+        "action vector [straight, right, left]"
+
+        clock_wise = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP] # create a list corresponding to Direction class
+        index = clock_wise.index(self.direction) # get a variable to get the index of these values
+
+        if np.array_equal(action, [1, 0, 0]):
+            new_direction = clock_wise[index] # no change
+        elif np.array_equal(action, [0, 1, 0]):
+            next_idx = (index +  1) % 4
+            new_direction = clock_wise[next_idx] # right turn r -> d -> l -> u
+        else: #[0, 0, 1]
+            next_idx = (index -1) % 4 # go counter clockwise
+            new_direction = clock_wise[index] # left turn r -> u -> l -> d
+
+        self.direction = new_direction
+
         x = self.head.x
         y = self.head.y
-        if direction == Direction.RIGHT:
+        if self.direction == Direction.RIGHT:
             x += BLOCK_SIZE
-        elif direction == Direction.LEFT:
+        elif self.direction == Direction.LEFT:
             x -= BLOCK_SIZE
-        elif direction == Direction.DOWN:
+        elif self.direction == Direction.DOWN:
             y += BLOCK_SIZE
-        elif direction == Direction.UP:
+        elif self.direction == Direction.UP:
             y -= BLOCK_SIZE
         # checking the direction, continuously updating the positionings of the head
         # update to class attribute head and we will have insert() function above to add the new head
         self.head = Point(x, y)
-            
 
-if __name__ == '__main__':
-    game = SnakeGame()
-    # game loop
-    while True:
-        game_over, score = game.play_step()
-        if game_over == True:
-            break
-        
-    print('Final Score', score)
-        
-    pygame.quit()
+"Remove the __main__ call, b'cuz we are going to use the agent to implement the move"
