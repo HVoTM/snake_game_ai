@@ -136,7 +136,6 @@ class SnakeGame:
         text = font.render("Score: " + str(self.score), True, WHITE)
         self.display.blit(text, [0, 0])
         pygame.display.flip() # flip() the display to put work on screen
-        # for this one, we may not need to add a replay button to simplify the learning process of the agent
         
     def _move(self, action):
         "action vector [straight, right, left]"
