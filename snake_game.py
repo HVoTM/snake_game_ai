@@ -38,7 +38,7 @@ SPEED = 15
 
 class SnakeGame:
     # set display resolution
-    def __init__(self, w=640, h=480):
+    def __init__(self, w=640, h=480) -> None:
         self.w = w
         self.h = h
         # init display
@@ -49,7 +49,7 @@ class SnakeGame:
         self.newgame()
 
     # function to reset the game into a new one for the AI agent to hit reset if died
-    def newgame(self):
+    def newgame(self) -> None:
         # init game state, starting with going to the right
         self.direction = Direction.RIGHT
         

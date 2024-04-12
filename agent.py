@@ -4,6 +4,7 @@ import numpy as np
 from snake_game import SnakeGame, Direction, Point
 from collections import deque ; "https://docs.python.org/3/library/collections.html#deque-objects"
 from typing import List
+from model import Linear_QNet, QTrainer
 
 # define parameters as constants, can change to configure the settings of the agent
 MAX_MEMORY= 100_000
@@ -14,11 +15,11 @@ class Agent:
     def __init__(self) -> None:
         self.n_games = 0
         self.epsilon = 0 # randomness
-        self.gamma = 0 # discount rate
+        self.gamma = 0.9 # discount rate (0 < n <= 1) - can play around
         self.memory = deque(maxlen=MAX_MEMORY) # if exceeds the max capacity, the deque object will popleft()
         # deque is a pretty useful data structures to implement in Python due to its complexity and easy for modification
-        self.model = None # TODO
-        self.trainer = None # TODO
+        self.model = Linear_QNet(11, 256, 3) # input: 11, output: 3, middle layer: customizable
+        self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
         # TODO: model trainer
         
     def get_state(self, game):
@@ -153,7 +154,8 @@ def train():
             
             if score > record:
                 record = score
-                # TODO: record high score: agent.model.save()
+                # TODO: record high score: 
+                agent.model.save()
             
             print('Game', agent.n_games, 'Score', score, 'Record:', record) 
             

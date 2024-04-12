@@ -40,3 +40,4 @@ We will be working on Pygame and using Deep Q Learning - a Deep Learning techniq
 # Resources
 [Tutorial]https://www.youtube.com/watch?v=L8ypSXwyBds&list=PLkZkb1B52EOdC-ZagCo7LrxxNuoawM1HQ&index=38&ab_channel=freeCodeCamp.org
 [Reinforcement Learning](https://en.wikipedia.org/wiki/Reinforcement_learning)
+Reinforcement Learning with experience replay and adaptation of action dispersion: https://arxiv.org/pdf/2208.00156.pdf
