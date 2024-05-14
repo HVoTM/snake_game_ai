@@ -116,7 +116,7 @@ class SnakeGame:
         if point is None:
             point = self.head
         # check if snake hits the boundaries
-        if point > self.w - BLOCK_SIZE or point < 0 or point > self.h - BLOCK_SIZE or point < 0:
+        if point.x > self.w - BLOCK_SIZE or point.x < 0 or point.y > self.h - BLOCK_SIZE or point.y < 0:
             return True
         # check if snake hits itself
         if point in self.snake[1:]:

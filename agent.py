@@ -5,6 +5,7 @@ from snake_game import SnakeGame, Direction, Point
 from collections import deque ; "https://docs.python.org/3/library/collections.html#deque-objects"
 from typing import List
 from model import Linear_QNet, QTrainer
+from helper import plot
 
 # define parameters as constants, can change to configure the settings of the agent
 MAX_MEMORY= 100_000
@@ -49,22 +50,22 @@ class Agent:
         """
         state = [
             # Danger straight
-            (dir_r and game.is_collision(point_r)) or # example: agent is moving to the right and check if the next right block 
-            (dir_l and game.is_collision(point_l)) or # (point_r) will be setting is_collision() to true
-            (dir_u and game.is_collision(point_u)) or 
-            (dir_d and game.is_collision(point_d)),
+            (dir_r and game._is_collision(point_r)) or # example: agent is moving to the right and check if the next right block 
+            (dir_l and game._is_collision(point_l)) or # (point_r) will be setting is_collision() to true
+            (dir_u and game._is_collision(point_u)) or 
+            (dir_d and game._is_collision(point_d)),
 
             # Danger right
-            (dir_u and game.is_collision(point_r)) or # same as going to the right, looking down, which is to the right of 
-            (dir_d and game.is_collision(point_l)) or # the direction the snake is going and check if there will be a collision
-            (dir_l and game.is_collision(point_u)) or 
-            (dir_r and game.is_collision(point_d)),
+            (dir_u and game._is_collision(point_r)) or # same as going to the right, looking down, which is to the right of 
+            (dir_d and game._is_collision(point_l)) or # the direction the snake is going and check if there will be a collision
+            (dir_l and game._is_collision(point_u)) or 
+            (dir_r and game._is_collision(point_d)),
 
             # Danger left
-            (dir_d and game.is_collision(point_r)) or # same as above, snake is currently going right, check the block going up 
-            (dir_u and game.is_collision(point_l)) or # which is to the left of the current direction and check collision
-            (dir_r and game.is_collision(point_u)) or 
-            (dir_l and game.is_collision(point_d)),
+            (dir_d and game._is_collision(point_r)) or # same as above, snake is currently going right, check the block going up 
+            (dir_u and game._is_collision(point_l)) or # which is to the left of the current direction and check collision
+            (dir_r and game._is_collision(point_u)) or 
+            (dir_l and game._is_collision(point_d)),
             
             # Move direction
             dir_l, # only one is true
@@ -146,7 +147,7 @@ def train():
         agent.remember(prev_state, latest_move, reward, new_state, done)
         
         if done:
-            game.reset()
+            game.newgame()
             agent.n_games += 1
              # train long memory: replay the agent's previous experience
             # and train all the previous moves and games played -> help improvements
@@ -159,6 +160,12 @@ def train():
             
             print('Game', agent.n_games, 'Score', score, 'Record:', record) 
             
-            # TODO: plot the stats on graph           
+            # TODO: plot the stats on graph      
+            plot_scores.append(score)
+            total_score += score
+            mean_score = total_score / agent.n_games
+            plot_mean_scores.append(mean_score)
+            plot(plot_scores, plot_mean_scores)
+
 if __name__ == '__main__':
     train()

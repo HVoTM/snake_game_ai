@@ -88,3 +88,6 @@ def old_feature():
 
 # 3/2/24
 Finished with the agent program for now, will go back to set up the trainer for learning
+
+# 5/5/24
+![PROGRESS](image.png)
