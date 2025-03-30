@@ -37,6 +37,9 @@ We will be working on Pygame and using Deep Q Learning - a Deep Learning techniq
 3. Implement the agent
 4. Implement the model
 
+## Results
+This is the high score of the learning agent
+![alt text](image.png)
 # Resources
 [Tutorial]https://www.youtube.com/watch?v=L8ypSXwyBds&list=PLkZkb1B52EOdC-ZagCo7LrxxNuoawM1HQ&index=38&ab_channel=freeCodeCamp.org
 [Reinforcement Learning](https://en.wikipedia.org/wiki/Reinforcement_learning)
